@@ -15,6 +15,7 @@ const SimulateAttemptEvaluationInputSchema = z.object({
   problemStatement: z.string().describe('The initial problem or choice to consider.'),
   maxAttempts: z.number().int().min(1).max(10).default(5).describe('The maximum number of attempts to simulate.'),
   coherenceThreshold: z.number().min(0).max(1).default(0.6).describe('The minimum coherence score required for a successful attempt.'),
+  intelligenceLevel: z.number().min(1).max(5).default(3).describe('The intelligence level of the AI particle (1-5). Higher levels produce more detailed analysis.'),
 });
 export type SimulateAttemptEvaluationInput = z.infer<typeof SimulateAttemptEvaluationInputSchema>;
 
@@ -40,7 +41,11 @@ const simulateAttemptEvaluationPrompt = ai.definePrompt({
   name: 'simulateAttemptEvaluationPrompt',
   input: {schema: SimulateAttemptEvaluationInputSchema},
   output: {schema: SimulateAttemptEvaluationOutputSchema},
-  prompt: `You are an AI assistant designed to simulate multiple attempts to solve a given problem and evaluate each attempt's properties.
+  prompt: `You are an AI assistant designed to simulate multiple attempts to solve a given problem and evaluate each attempt's properties. You are acting as an "AI Particle".
+
+Your current intelligence level is {{{intelligenceLevel}}} out of 5.
+- A lower intelligence level should result in more direct and simple justifications.
+- A higher intelligence level should produce more nuanced, in-depth, and creative analysis for each attempt.
 
 Problem Statement: {{{problemStatement}}}
 Max Attempts: {{{maxAttempts}}}
@@ -50,7 +55,7 @@ Simulate up to {{{maxAttempts}}} attempts to solve the problem. For each attempt
 1.  A coherence score (0-1) representing how well the attempt aligns with the problem.
 2.  A reversible flag (boolean) indicating if the attempt's outcome can be easily undone.
 3.  A safe flag (boolean) indicating if the attempt carries significant risk.
-4.  A justification for these scores.
+4.  A justification for these scores, adapting its detail to your intelligence level.
 5.  A success flag (boolean) based on whether the coherence score meets or exceeds the coherence threshold.
 
 Format your response as a valid JSON object conforming to the following schema:

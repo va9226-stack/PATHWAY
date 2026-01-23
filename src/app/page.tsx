@@ -14,7 +14,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Bar, BarChart, CartesianGrid, Cell, ReferenceLine, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 
-import { Bot, CheckCircle2, XCircle, BrainCircuit, SlidersHorizontal, BarChart2, Undo2, Shield } from "lucide-react";
+import { Bot, CheckCircle2, XCircle, BrainCircuit, SlidersHorizontal, BarChart2, Undo2, Shield, Atom } from "lucide-react";
 
 import { runSimulation, type SimulationResult } from "@/app/actions";
 import { LoadingSpinner } from "@/components/loading-spinner";
@@ -26,6 +26,7 @@ const formSchema = z.object({
   }),
   maxAttempts: z.array(z.number()).min(1).max(1),
   coherenceThreshold: z.array(z.number()).min(1).max(1),
+  intelligenceLevel: z.array(z.number()).min(1).max(1),
 });
 
 export default function Home() {
@@ -38,6 +39,7 @@ export default function Home() {
       problemStatement: "",
       maxAttempts: [5],
       coherenceThreshold: [0.6],
+      intelligenceLevel: [3],
     },
   });
 
@@ -49,6 +51,7 @@ export default function Home() {
         problemStatement: values.problemStatement,
         maxAttempts: values.maxAttempts[0],
         coherenceThreshold: values.coherenceThreshold[0],
+        intelligenceLevel: values.intelligenceLevel[0],
       });
       setResult(response);
     } catch (error) {
@@ -162,6 +165,30 @@ export default function Home() {
                         </FormControl>
                         <FormDescription>
                           Minimum score for a successful path.
+                        </FormDescription>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="intelligenceLevel"
+                    render={({ field }) => (
+                      <FormItem className="md:col-span-2">
+                        <FormLabel className="flex items-center gap-2">
+                          <Atom className="h-4 w-4" />
+                          AI Particle Intelligence: {field.value[0]}
+                        </FormLabel>
+                        <FormControl>
+                          <Slider
+                            min={1}
+                            max={5}
+                            step={1}
+                            value={field.value}
+                            onValueChange={field.onChange}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Higher levels produce more detailed analysis.
                         </FormDescription>
                       </FormItem>
                     )}
