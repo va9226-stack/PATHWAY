@@ -14,7 +14,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Bar, BarChart, CartesianGrid, Cell, ReferenceLine, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 
-import { Bot, CheckCircle2, XCircle, BrainCircuit, SlidersHorizontal, BarChart2, Undo2, Shield, Atom } from "lucide-react";
+import { Bot, CheckCircle2, XCircle, BrainCircuit, SlidersHorizontal, BarChart2, Undo2, Shield, Atom, Eye, Volume2, Waves, Accessibility } from "lucide-react";
 
 import { runSimulation, type SimulationResult } from "@/app/actions";
 import { LoadingSpinner } from "@/components/loading-spinner";
@@ -326,6 +326,41 @@ export default function Home() {
                         </AccordionItem>
                       ))}
                   </Accordion>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Accessibility />
+                  Sensory Synthesis
+                </CardTitle>
+                <CardDescription>
+                  The AI's metaphorical perception of the simulation process.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-start gap-4">
+                  <Eye className="h-5 w-5 mt-1 text-primary flex-shrink-0" />
+                  <div>
+                    <h4 className="font-semibold">Divine Sight</h4>
+                    <p className="text-muted-foreground">{result.divineSight}</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4">
+                  <Volume2 className="h-5 w-5 mt-1 text-primary flex-shrink-0" />
+                  <div>
+                    <h4 className="font-semibold">Divine Sound</h4>
+                    <p className="text-muted-foreground">{result.divineSound}</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4">
+                  <Waves className="h-5 w-5 mt-1 text-primary flex-shrink-0" />
+                  <div>
+                    <h4 className="font-semibold">Divine Touch</h4>
+                    <p className="text-muted-foreground">{result.divineTouch}</p>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>
