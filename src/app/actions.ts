@@ -27,7 +27,6 @@ export async function runSimulation(
         coherence: a.coherence,
         reversible: a.reversible,
         safe: a.safe,
-        timestamp: Date.now(),
       })),
     };
 
