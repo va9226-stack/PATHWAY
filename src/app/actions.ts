@@ -19,9 +19,6 @@ export async function runSimulation(
   try {
     const simulationOutput = await simulateAttemptEvaluation(input);
 
-    // Add a small artificial delay to make the loading state visible
-    await new Promise(resolve => setTimeout(resolve, 500));
-
     const decisionInput: DecisionSynthesisInput = {
       problemStatement: input.problemStatement,
       coherenceThreshold: input.coherenceThreshold,
@@ -35,9 +32,6 @@ export async function runSimulation(
     };
 
     const decisionOutput = await synthesizeDecision(decisionInput);
-
-    // Add another small artificial delay
-    await new Promise(resolve => setTimeout(resolve, 500));
 
     return {
       ...simulationOutput,
