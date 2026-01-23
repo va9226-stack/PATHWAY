@@ -1,9 +1,9 @@
 'use server';
 
 /**
- * @fileOverview Simulates multiple attempts to solve a problem, evaluating each attempt's coherence.
+ * @fileOverview Simulates multiple attempts to solve a problem, evaluating each attempt's properties.
  *
- * - simulateAttemptEvaluation - A function that simulates the attempt evaluation process.
+ * - simulateAttemptEvaluation - A function that simulates attempts and evaluates them.
  * - SimulateAttemptEvaluationInput - The input type for the simulateAttemptEvaluation function.
  * - SimulateAttemptEvaluationOutput - The return type for the simulateAttemptEvaluation function.
  */
@@ -21,14 +21,13 @@ export type SimulateAttemptEvaluationInput = z.infer<typeof SimulateAttemptEvalu
 const AttemptResultSchema = z.object({
   attemptNumber: z.number().int().describe('The attempt number.'),
   coherence: z.number().describe('The coherence score of the attempt (0-1).'),
-  justification: z.string().describe('The justification for the coherence score.'),
+  reversible: z.boolean().describe('Whether the attempt is reversible.'),
+  safe: z.boolean().describe('Whether the attempt is safe.'),
+  justification: z.string().describe('The justification for the scores.'),
   success: z.boolean().describe('Whether the attempt was successful based on the coherence threshold.'),
 });
 
 const SimulateAttemptEvaluationOutputSchema = z.object({
-  decision: z.enum(['YES', 'NO']).describe('The final decision based on the simulation.'),
-  reason: z.string().describe('The reason for the final decision.'),
-  successfulAttempt: z.number().int().optional().describe('The attempt number that was successful, if any.'),
   attemptResults: z.array(AttemptResultSchema).describe('The results of each attempt.'),
 });
 export type SimulateAttemptEvaluationOutput = z.infer<typeof SimulateAttemptEvaluationOutputSchema>;
@@ -41,15 +40,18 @@ const simulateAttemptEvaluationPrompt = ai.definePrompt({
   name: 'simulateAttemptEvaluationPrompt',
   input: {schema: SimulateAttemptEvaluationInputSchema},
   output: {schema: SimulateAttemptEvaluationOutputSchema},
-  prompt: `You are an AI assistant designed to simulate multiple attempts to solve a given problem and evaluate the coherence of each attempt.
+  prompt: `You are an AI assistant designed to simulate multiple attempts to solve a given problem and evaluate each attempt's properties.
 
 Problem Statement: {{{problemStatement}}}
 Max Attempts: {{{maxAttempts}}}
 Coherence Threshold: {{{coherenceThreshold}}}
 
-Simulate up to {{{maxAttempts}}} attempts to solve the problem. For each attempt, generate a coherence score between 0 and 1 and a justification for the score. Determine if the attempt was successful based on whether the coherence score meets or exceeds the specified coherence threshold.
-
-Based on the results of the attempts, provide a final decision (YES or NO) and a reason for the decision. If any attempt was successful, the decision should be YES. If all attempts failed, the decision should be NO.
+Simulate up to {{{maxAttempts}}} attempts to solve the problem. For each attempt, generate:
+1.  A coherence score (0-1) representing how well the attempt aligns with the problem.
+2.  A reversible flag (boolean) indicating if the attempt's outcome can be easily undone.
+3.  A safe flag (boolean) indicating if the attempt carries significant risk.
+4.  A justification for these scores.
+5.  A success flag (boolean) based on whether the coherence score meets or exceeds the coherence threshold.
 
 Format your response as a valid JSON object conforming to the following schema:
 
@@ -57,7 +59,7 @@ ${JSON.stringify(SimulateAttemptEvaluationOutputSchema.describe('The output sche
 
 Make sure each element in the attemptResults array conforms to the following schema:
 ${JSON.stringify(AttemptResultSchema.describe('The schema for each attempt result.'))}
-`,  
+`,
 });
 
 const simulateAttemptEvaluationFlow = ai.defineFlow(

@@ -14,11 +14,11 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Bar, BarChart, CartesianGrid, Cell, ReferenceLine, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 
-import { Bot, CheckCircle2, XCircle, BrainCircuit, SlidersHorizontal, BarChart2 } from "lucide-react";
+import { Bot, CheckCircle2, XCircle, BrainCircuit, SlidersHorizontal, BarChart2, Undo2, Shield } from "lucide-react";
 
-import { runSimulation } from "@/app/actions";
-import type { SimulateAttemptEvaluationOutput } from "@/ai/flows/attempt-evaluation-simulation";
+import { runSimulation, type SimulationResult } from "@/app/actions";
 import { LoadingSpinner } from "@/components/loading-spinner";
+import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
   problemStatement: z.string().min(10, {
@@ -30,7 +30,7 @@ const formSchema = z.object({
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
-  const [result, setResult] = useState<SimulateAttemptEvaluationOutput | null>(null);
+  const [result, setResult] = useState<SimulationResult | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -250,15 +250,37 @@ export default function Home() {
                       {result.attemptResults.map((attempt) => (
                         <AccordionItem value={`item-${attempt.attemptNumber}`} key={attempt.attemptNumber}>
                           <AccordionTrigger>
-                            <div className="flex items-center gap-4">
-                              <span className={`flex h-8 w-8 items-center justify-center rounded-full font-bold ${attempt.success ? 'bg-accent text-accent-foreground' : 'bg-primary text-primary-foreground'}`}>
+                            <div className="flex w-full items-center gap-4">
+                              <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full font-bold ${attempt.success ? 'bg-accent text-accent-foreground' : 'bg-primary text-primary-foreground'}`}>
                                 {attempt.attemptNumber}
                               </span>
-                              <span>Attempt {attempt.attemptNumber} - Coherence: {attempt.coherence} ({attempt.success ? "Success" : "Fail"})</span>
+                              <div className="flex-grow text-left">
+                                Attempt {attempt.attemptNumber} - Coherence: {attempt.coherence} ({attempt.success ? "Success" : "Fail"})
+                              </div>
+                              <div className="hidden items-center gap-4 text-sm text-muted-foreground md:flex">
+                                <div className={cn("flex items-center gap-1.5", !attempt.reversible && 'text-destructive')}>
+                                    <Undo2 className="h-4 w-4" />
+                                    <span>{attempt.reversible ? 'Reversible' : 'Irreversible'}</span>
+                                </div>
+                                <div className={cn("flex items-center gap-1.5", !attempt.safe && 'text-destructive')}>
+                                    <Shield className="h-4 w-4" />
+                                    <span>{attempt.safe ? 'Safe' : 'Risky'}</span>
+                                </div>
+                              </div>
                             </div>
                           </AccordionTrigger>
-                          <AccordionContent className="prose prose-sm max-w-none text-muted-foreground pl-14">
-                            {attempt.justification}
+                          <AccordionContent className="prose prose-sm max-w-none text-muted-foreground pl-16">
+                            <p>{attempt.justification}</p>
+                             <div className="mt-2 flex items-center gap-4 text-sm text-muted-foreground md:hidden">
+                                <div className={cn("flex items-center gap-1.5", !attempt.reversible && 'text-destructive')}>
+                                    <Undo2 className="h-4 w-4" />
+                                    <span>{attempt.reversible ? 'Reversible' : 'Irreversible'}</span>
+                                </div>
+                                <div className={cn("flex items-center gap-1.5", !attempt.safe && 'text-destructive')}>
+                                    <Shield className="h-4 w-4" />
+                                    <span>{attempt.safe ? 'Safe' : 'Risky'}</span>
+                                </div>
+                              </div>
                           </AccordionContent>
                         </AccordionItem>
                       ))}
