@@ -37,8 +37,7 @@ export async function runSimulation(
       ...decisionOutput,
     };
   } catch (error) {
-    console.error('Error in simulation server action:', error);
-    // In a real app, you might want to log this error to a service
+    // In a production app, you might want to log this error to a monitoring service.
     throw new Error('The AI simulation failed. Please check your API key and try again.');
   }
 }
