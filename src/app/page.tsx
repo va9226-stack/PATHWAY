@@ -59,6 +59,11 @@ export default function Home() {
     }
   }
 
+  const handleExplorePath = (newProblem: string) => {
+    form.setValue("problemStatement", newProblem, { shouldValidate: true });
+    form.handleSubmit(onSubmit)();
+  };
+
   const chartData = result?.attemptResults.map(attempt => ({
     name: `Attempt ${attempt.attemptNumber}`,
     coherence: attempt.coherence,
@@ -281,6 +286,15 @@ export default function Home() {
                                     <span>{attempt.safe ? 'Safe' : 'Risky'}</span>
                                 </div>
                               </div>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="mt-4"
+                                onClick={() => handleExplorePath(attempt.justification)}
+                              >
+                                <BrainCircuit className="mr-2 h-4 w-4" />
+                                Explore this Path
+                              </Button>
                           </AccordionContent>
                         </AccordionItem>
                       ))}
